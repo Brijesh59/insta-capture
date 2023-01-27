@@ -12,6 +12,7 @@
   "dependencies": {
     "aws-sdk": "^2.1303.0",
     "dotenv": "^16.0.3",
+    "node-cron": "^3.0.2",
     "puppeteer": "^19.6.1"
   }
 }
