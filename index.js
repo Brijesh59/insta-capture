@@ -4,25 +4,29 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
+const ACCESS_KEY_ID = process.env.ACCESS_KEY_ID;
+const SECRET_ACCESS_KEY = process.env.SECRET_ACCESS_KEY;
+const BUCKET_NAME = process.env.BUCKET_NAME;
+const INSTAGRAM_USERNAME = process.env.INSTAGRAM_USERNAME;
+
 // AWS S3 configuration
 AWS.config.update({
-  accessKeyId: process.env.ACCESS_KEY_ID,
-  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  accessKeyId: ACCESS_KEY_ID,
+  secretAccessKey: SECRET_ACCESS_KEY,
 });
 const s3 = new AWS.S3();
 
 const captureScreenshot = async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  await page.goto(
-    `https://www.instagram.com/${process.env.INSTAGRAM_USERNAME}/`,
-    { waitUntil: "networkidle0" }
-  );
+  await page.goto(`https://www.instagram.com/${INSTAGRAM_USERNAME}/`, {
+    waitUntil: "networkidle0",
+  });
   const screenshot = await page.screenshot();
 
   // Uploading the screenshot to the S3 bucket
   const params = {
-    Bucket: process.env.BUCKET_NAME,
+    Bucket: BUCKET_NAME,
     Key: new Date().toDateString() + ".png",
     Body: screenshot,
   };
