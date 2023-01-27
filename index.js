@@ -1,21 +1,10 @@
 const puppeteer = require("puppeteer");
-const AWS = require("aws-sdk");
 const cron = require("node-cron");
 const dotenv = require("dotenv");
 
 dotenv.config();
 
-const ACCESS_KEY_ID = process.env.ACCESS_KEY_ID;
-const SECRET_ACCESS_KEY = process.env.SECRET_ACCESS_KEY;
-const BUCKET_NAME = process.env.BUCKET_NAME;
 const INSTAGRAM_USERNAME = process.env.INSTAGRAM_USERNAME;
-
-// AWS S3 configuration
-AWS.config.update({
-  accessKeyId: ACCESS_KEY_ID,
-  secretAccessKey: SECRET_ACCESS_KEY,
-});
-const s3 = new AWS.S3();
 
 const captureScreenshot = async () => {
   console.log("Opening browser");
@@ -29,23 +18,10 @@ const captureScreenshot = async () => {
     waitUntil: "networkidle0",
   });
 
-  console.log("Taking screenshot");
-  const screenshot = await page.screenshot();
-
-  // Uploading the screenshot to the S3 bucket
-  const params = {
-    Bucket: BUCKET_NAME,
-    Key: new Date().toDateString() + ".png",
-    Body: screenshot,
-  };
-
-  console.log("Uploading to S3");
-  s3.upload(params, function (err, data) {
-    if (err) {
-      console.log("Error while uploading to S3", err);
-    } else {
-      console.log(`Screenshot successfully uploaded to ${data.Location}`);
-    }
+  console.log("Taking screenshot and saving locally");
+  await page.screenshot({
+    path: `/Users/infinity/Pictures/screenshots/insta-capture/${new Date().toDateString()}.png`,
+    fullPage: true,
   });
 
   console.log("Closing browser");
